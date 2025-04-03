@@ -1,11 +1,13 @@
+
 .userchat{
+    flex: 3;
     padding: 10px;
     display: flex;
     align-items: center;
     gap: 10px;
 
     &:hover{
-        background-color: #272549;
+        background-color: rgb(205, 199, 199);
     }
 
     img{
@@ -23,7 +25,7 @@
         }
         p{
             font-size: 14px;
-            color: lightgray;
+            color: rgba(0, 0, 0, 0.734);
         }
     }
 }

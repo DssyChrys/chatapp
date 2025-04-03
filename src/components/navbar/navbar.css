@@ -3,7 +3,7 @@
     align-items: center;
     height: 50px;
     padding: 10px;
-    background-color: #2f2d52;
+    background-color: rgb(205, 199, 199);
     justify-content: space-between;
 
     .info{
@@ -15,11 +15,6 @@
                 height: 30px;
                 border-radius: 50%;
                 object-fit: cover;
-                color: white;
-            }
-
-            button{
-                background-color: #a5a3d1;
             }
     }
 }

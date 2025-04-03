@@ -9,7 +9,7 @@ export default function Navbar(){
                 <div className="info">
                     <img src="/user.png" alt="" />
                     <h4>John doe</h4>
-                    <button>LogOut</button>
+                    <img src="/disconnect.png" alt="" />
                 </div>
             </div>
         </>

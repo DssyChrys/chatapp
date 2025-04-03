@@ -14,8 +14,8 @@
             display: flex;
             .son1{
                 flex: 1;
-                background-color: #3e3c61;
-                color: white;
+                background-color: rgba(255, 255, 255, 0.871);
+                color: black;
             }
             .son2{
                 flex: 2;
