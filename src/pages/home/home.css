@@ -1,0 +1,25 @@
+.main{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: rgb(190, 190, 246);
+    backdrop-filter: blur(50px);
+        .box{
+            border-radius: 5px;
+            width: 65%;
+            height: 80%;
+            display: flex;
+            .son1{
+                flex: 1;
+                background-color: #3e3c61;
+                color: white;
+            }
+            .son2{
+                flex: 2;
+                background-color: #cbc9f0;
+            }
+        }
+}
