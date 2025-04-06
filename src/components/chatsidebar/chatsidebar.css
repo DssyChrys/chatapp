@@ -1,31 +1,41 @@
-
-.userchat{
-    flex: 3;
-    padding: 10px;
+.home{
     display: flex;
-    align-items: center;
-    gap: 10px;
+    height: 100%;
 
-    &:hover{
-        background-color: rgb(205, 199, 199);
-    }
+    .chat{
+        width: 100%;
 
-    img{
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        object-fit: cover;
-        color: white;
-    }
-
-    .userchatinfo{
-        span{
-          font-size: 18px;
-          font-weight: 500;  
+        .userchat{
+            margin-top: 50px;
+            flex: 3;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+    
+            &:hover{
+                background-color: rgb(205, 199, 199);
+            }
+    
+            img{
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                object-fit: cover;
+                color: white;
+            }
+    
+            .userchatinfo{
+                span{
+                font-size: 18px;
+                font-weight: 500;  
+                }
+                p{
+                    font-size: 14px;
+                    color: rgba(0, 0, 0, 0.734);
+                }
+            }
         }
-        p{
-            font-size: 14px;
-            color: rgba(0, 0, 0, 0.734);
-        }
     }
+   
 }
