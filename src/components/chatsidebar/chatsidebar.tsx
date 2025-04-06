@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './chatsidebar.css'
 import Navbar from '../navbar/navbar';
-import { db } from '../../firebase';
+import { db } from '../Discussion/firebase';
 import { collection, getDocs } from 'firebase/firestore';
-import { auth } from '../../firebase';
+import { auth } from '../Discussion/firebase';
 
 
 interface User {

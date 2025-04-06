@@ -6,6 +6,8 @@ import Register from './pages/Register';
 import Home from './pages/home/home';
 import './App.css';
 import NotifPage from './pages/notifPage/notifPage';
+import Discussion from './components/Discussion/discussion';
+
 
 const App: React.FC = () => {
   return (
@@ -16,6 +18,7 @@ const App: React.FC = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Home />} />
         <Route path="/notification" element={<NotifPage />} />
+        <Route path="/discussion" element={<Discussion />} />
       </Routes>
     </Router>
   );
