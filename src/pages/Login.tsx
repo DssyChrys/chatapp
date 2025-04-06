@@ -1,6 +1,6 @@
 // src/components/Login.tsx
 import React, { useState, FormEvent } from 'react';
-import { auth } from '../firebase' ;
+import { auth } from '../components/Discussion/firebase' ;
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
