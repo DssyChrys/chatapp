@@ -1,37 +1,61 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { collection, query, orderBy, limit, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { db, auth } from './firebase';
 import { format } from 'date-fns';
 import { Send } from 'lucide-react';
 import './discussion.css';
+import ChatMessage from './chatmessage';
 
-interface Message {
+export interface Message {
   id?: string;
   text: string;
   uid: string;
   photoURL: string;
   displayName: string;
   createdAt: any;
+  recipientId: string;
+  senderId: string;
 }
 
-const Discussion: React.FC = () => {
+interface DiscussionProps {
+  selectedUser: { uid: string; displayName: string; photoURL: string } | null;
+}
+
+const Discussion: React.FC<DiscussionProps> = ({ selectedUser }) => {
+  if (!selectedUser) {
+    return <div>Please select a user to chat with.</div>;
+  }
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [formValue, setFormValue] = useState('');
 
   const messagesRef = collection(db, 'messages');
-  const messagesQuery = query(messagesRef, orderBy('createdAt', 'desc'), limit(50));
+
+  // Requête mise à jour pour récupérer les messages entre l'utilisateur actuel et le destinataire sélectionné
+  const messagesQuery = query(
+    messagesRef,
+    where('recipientId', 'in', [selectedUser.uid, auth.currentUser?.uid]),
+    where('senderId', 'in', [selectedUser.uid, auth.currentUser?.uid]),
+    orderBy('createdAt', 'asc'),
+    limit(50)
+  );
 
   const [messages] = useCollectionData(messagesQuery);
-  const reversedMessages = messages?.slice().reverse();
+
+  // Filtrer et trier les messages pour éviter les problèmes liés à createdAt
+  const sortedMessages = messages
+    ?.filter((msg) => msg.createdAt) // Ignorez les messages sans createdAt
+    .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis()) || [];
 
   const scrollToBottom = () => {
+    console.log('Scrolling to bottom');
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [sortedMessages]);
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +70,8 @@ const Discussion: React.FC = () => {
       photoURL,
       displayName,
       createdAt: serverTimestamp(),
+      recipientId: selectedUser.uid,
+      senderId: uid,
     });
 
     setFormValue('');
@@ -53,48 +79,32 @@ const Discussion: React.FC = () => {
   };
 
   return (
-        <div className="chat">
-          <div className="messages">
-            {reversedMessages?.map((msg, idx) => (
-              <ChatMessage key={idx} message={msg as Message} />
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <form onSubmit={sendMessage} className="input">
-            <input
-              value={formValue}
-              onChange={(e) => setFormValue(e.target.value)}
-              placeholder="Type a message..."
-              className="inputField"
-            />
-            <button
-              type="submit"
-              disabled={!formValue.trim()}
-              className="sendButton"
-            >
-              <Send size={20} />
-            </button>
-          </form>
-        </div>
-  );
-};
-
-const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
-  const { text, uid, displayName, createdAt } = message;
-  const isCurrentUser = uid === auth.currentUser?.uid;
-
-  return (
-    <div className={`message ${isCurrentUser ? 'owner' : ''}`}>
-      <div className="messageContent">
-        <div className="messageUser">{displayName || 'Anonymous'}</div>
-        <p className="messageText">{text}</p>
+    <div className="chat">
+      <div className="info">
+        <h3>{selectedUser.displayName}</h3>
       </div>
-      {createdAt && createdAt instanceof Timestamp && (
-        <div className="messageTime">
-          {format(createdAt.toDate(), 'HH:mm')}
-        </div>
-      )}
+      <div className="messages">
+        {sortedMessages.map((msg, idx) => (
+          <ChatMessage key={idx} message={msg as Message} />
+        ))}
+        <div ref={messagesEndRef} />
+      </div>
+
+      <form onSubmit={sendMessage} className="input">
+        <input
+          value={formValue}
+          onChange={(e) => setFormValue(e.target.value)}
+          placeholder="Type a message..."
+          className="inputField"
+        />
+        <button
+          type="submit"
+          disabled={!formValue.trim()}
+          className="sendButton"
+        >
+          <Send size={20} />
+        </button>
+      </form>
     </div>
   );
 };
