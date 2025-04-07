@@ -53,30 +53,30 @@ const Discussion: React.FC = () => {
   };
 
   return (
-    <div className="chat">
-      <div className="messages">
-        {reversedMessages?.map((msg, idx) => (
-          <ChatMessage key={idx} message={msg as Message} />
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
+        <div className="chat">
+          <div className="messages">
+            {reversedMessages?.map((msg, idx) => (
+              <ChatMessage key={idx} message={msg as Message} />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
 
-      <form onSubmit={sendMessage} className="input">
-        <input
-          value={formValue}
-          onChange={(e) => setFormValue(e.target.value)}
-          placeholder="Type a message..."
-          className="inputField"
-        />
-        <button
-          type="submit"
-          disabled={!formValue.trim()}
-          className="sendButton"
-        >
-          <Send size={20} />
-        </button>
-      </form>
-    </div>
+          <form onSubmit={sendMessage} className="input">
+            <input
+              value={formValue}
+              onChange={(e) => setFormValue(e.target.value)}
+              placeholder="Type a message..."
+              className="inputField"
+            />
+            <button
+              type="submit"
+              disabled={!formValue.trim()}
+              className="sendButton"
+            >
+              <Send size={20} />
+            </button>
+          </form>
+        </div>
   );
 };
 
@@ -85,7 +85,7 @@ const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
   const isCurrentUser = uid === auth.currentUser?.uid;
 
   return (
-    <div className={`message ${isCurrentUser ? 'owner' : ''}`}>
+    <div className={message ${isCurrentUser ? 'owner' : ''}}>
       <div className="messageContent">
         <div className="messageUser">{displayName || 'Anonymous'}</div>
         <p className="messageText">{text}</p>
@@ -99,4 +99,4 @@ const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
   );
 };
 
-export default Discussion;
+export default Discussion;
