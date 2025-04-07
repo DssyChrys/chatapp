@@ -1,13 +1,9 @@
+// firebase.ts (mise à jour)
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from 'firebase/firestore';
-//import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getMessaging, getToken } from 'firebase/messaging';
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyBVqEf05JxMihWrkxu8OQjql3juY6TjkGk",
   authDomain: "chatapp-a8088.firebaseapp.com",
@@ -22,5 +18,5 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth();
 export const db = getFirestore(app);
-//export const provider = new GoogleAuthProvider();
+export const messaging = getMessaging(app);
 export default firebaseConfig;
