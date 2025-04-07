@@ -1,11 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { collection, query, where, orderBy, limit, addDoc, serverTimestamp } from 'firebase/firestore';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  addDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { db, auth } from './firebase';
-import { format } from 'date-fns';
+import ChatMessage from './chatmessage';
 import { Send } from 'lucide-react';
 import './discussion.css';
-import ChatMessage from './chatmessage';
 
 export interface Message {
   id?: string;
@@ -23,48 +29,41 @@ interface DiscussionProps {
 }
 
 const Discussion: React.FC<DiscussionProps> = ({ selectedUser }) => {
-  if (!selectedUser) {
-    return <div>Please select a user to chat with.</div>;
-  }
-
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [formValue, setFormValue] = useState('');
-
-  const messagesRef = collection(db, 'messages');
-
-  // Requête mise à jour pour récupérer les messages entre l'utilisateur actuel et le destinataire sélectionné
-  const messagesQuery = query(
-    messagesRef,
-    where('recipientId', 'in', [selectedUser.uid, auth.currentUser?.uid]),
-    where('senderId', 'in', [selectedUser.uid, auth.currentUser?.uid]),
-    orderBy('createdAt', 'asc'),
-    limit(50)
-  );
-
-  const [messages] = useCollectionData(messagesQuery);
-
-  // Filtrer et trier les messages pour éviter les problèmes liés à createdAt
-  const sortedMessages = messages
-    ?.filter((msg) => msg.createdAt) // Ignorez les messages sans createdAt
-    .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis()) || [];
-
-  const scrollToBottom = () => {
-    console.log('Scrolling to bottom');
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [sortedMessages]);
+    if (!selectedUser || !auth.currentUser) return;
+
+    const messagesRef = collection(db, 'messages');
+
+    const messagesQuery = query(
+      messagesRef,
+      where('participants', 'array-contains', auth.currentUser.uid),
+      orderBy('createdAt', 'asc')
+    );
+
+    const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
+      const msgs: Message[] = snapshot.docs
+        .map((doc) => doc.data() as Message)
+        .filter((msg) =>
+          (msg.senderId === auth.currentUser?.uid && msg.recipientId === selectedUser.uid) ||
+          (msg.senderId === selectedUser.uid && msg.recipientId === auth.currentUser?.uid)
+        );
+      setMessages(msgs);
+    });
+
+    return () => unsubscribe();
+  }, [selectedUser]);
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!formValue.trim() || !auth.currentUser) return;
+    if (!formValue.trim() || !auth.currentUser || !selectedUser) return;
 
     const { uid, photoURL, displayName } = auth.currentUser;
 
-    await addDoc(messagesRef, {
+    await addDoc(collection(db, 'messages'), {
       text: formValue,
       uid,
       photoURL,
@@ -72,20 +71,27 @@ const Discussion: React.FC<DiscussionProps> = ({ selectedUser }) => {
       createdAt: serverTimestamp(),
       recipientId: selectedUser.uid,
       senderId: uid,
+      participants: [uid, selectedUser.uid], // <== utilisé pour array-contains
     });
 
     setFormValue('');
-    scrollToBottom();
   };
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  if (!selectedUser) return <div>Please select a user to chat with.</div>;
 
   return (
     <div className="chat">
       <div className="info">
         <h3>{selectedUser.displayName}</h3>
       </div>
+
       <div className="messages">
-        {sortedMessages.map((msg, idx) => (
-          <ChatMessage key={idx} message={msg as Message} />
+        {messages.map((msg, idx) => (
+          <ChatMessage key={idx} message={msg} />
         ))}
         <div ref={messagesEndRef} />
       </div>
@@ -97,11 +103,7 @@ const Discussion: React.FC<DiscussionProps> = ({ selectedUser }) => {
           placeholder="Type a message..."
           className="inputField"
         />
-        <button
-          type="submit"
-          disabled={!formValue.trim()}
-          className="sendButton"
-        >
+        <button type="submit" disabled={!formValue.trim()} className="sendButton">
           <Send size={20} />
         </button>
       </form>
