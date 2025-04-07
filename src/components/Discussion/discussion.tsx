@@ -85,7 +85,7 @@ const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
   const isCurrentUser = uid === auth.currentUser?.uid;
 
   return (
-    <div className={message ${isCurrentUser ? 'owner' : ''}}>
+    <div className={`message ${isCurrentUser ? 'owner' : ''}`}>
       <div className="messageContent">
         <div className="messageUser">{displayName || 'Anonymous'}</div>
         <p className="messageText">{text}</p>
@@ -99,4 +99,4 @@ const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
   );
 };
 
-export default Discussion;
+export default Discussion;
