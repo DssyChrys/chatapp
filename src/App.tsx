@@ -1,42 +1,54 @@
-import React, { useState, useEffect } from 'react';
+// src/App.tsx
+
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './components/Discussion/firebase';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/home/home';
+import NotificationPage from './components/Notification/notifPage';
+import { notificationService } from './services/notificationServices';
 import './App.css';
-import NotifPage from './pages/notifPage/notifPage';
-import Discussion from './components/Discussion/discussion';
 
-interface User {
-  uid: string;
-  displayName: string;
-  email: string;
-  photoURL: string;
-}
-
-const App: React.FC = () => {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-
+function App() {
   useEffect(() => {
-   
+    // Configurer les écouteurs d'authentification
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Demander la permission de notification et enregistrer le token FCM
+        await notificationService.requestPermissionAndRegisterToken();
+        
+        // Configurer l'écouteur pour les messages en premier plan
+        notificationService.listenToMessages((payload) => {
+          // Afficher une notification du navigateur
+          if (Notification.permission === 'granted') {
+            const title = payload.notification?.title || 'Nouveau message';
+            const body = payload.notification?.body || 'Vous avez reçu un nouveau message';
+            
+            new Notification(title, {
+              body,
+              icon: '/chat.png'
+            });
+          }
+        });
+      }
+    });
+    
+    return () => unsubscribe();
   }, []);
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/notification" element={<NotifPage />} />
-        {/* Redirige vers Home si aucun utilisateur n'est sélectionné */}
-        <Route
-          path="/discussion"
-          element={selectedUser ? <Discussion selectedUser={selectedUser} /> : <Navigate to="/home" />}
-        />
+        <Route path="/notification" element={<NotificationPage />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );
-};
+}
 
 export default App;
