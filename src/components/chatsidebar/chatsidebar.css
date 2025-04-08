@@ -8,37 +8,38 @@
         max-height: calc(100vh - 100px); /* Ajustez la hauteur maximale selon votre besoin */
         overflow-y: auto; 
 
-        .userchat{
-            flex: 3;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            
-    
-            &:hover{
-                background-color: rgb(205, 199, 199);
+        .userchat {
+          padding: 10px;
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          height: 70px; 
+          box-sizing: border-box;
+        
+          &:hover {
+            background-color: rgb(205, 199, 199);
+          }
+        
+          img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+          }
+        
+          .userchatinfo {
+            margin-left: 10px;
+        
+            span {
+              font-size: 18px;
+              font-weight: 500;
             }
-    
-            img{
-                width: 50px;
-                height: 50px;
-                border-radius: 50%;
-                object-fit: cover;
-                color: white;
+        
+            p {
+              font-size: 14px;
+              color: rgba(0, 0, 0, 0.734);
             }
-    
-            .userchatinfo{
-
-                span{
-                font-size: 18px;
-                font-weight: 500;  
-                }
-                p{
-                    font-size: 14px;
-                    color: rgba(0, 0, 0, 0.734);
-                }
-            }
+          }
         }
+      }
     }
-   
-}
