@@ -23,23 +23,61 @@
 
 
                 .no-user-selected {
+
+ 
+
                     display: flex;
+ 
+
                     flex-direction: column;
+ 
+
                     align-items: center;
+ 
+
                     justify-content: center;
+ 
+
                     height: 100%; /* ou fixe, genre 100vh ou 500px, selon ton layout */
+ 
+
                     text-align: center;
+ 
+
                     color: #555;
+ 
+
                     opacity: 0.8;
+ 
+
+
+ 
 
                     img{
+ 
+
                         width: 200px;
+ 
+
                         height: 500px;
+ 
+
                         border-radius: 10px;
+ 
+
                         margin-bottom: 20px;
+ 
+
                     }
+ 
+
                   }
+ 
+
                   
+ 
             }
+ 
         }
+ 
 }
