@@ -22,7 +22,15 @@ export default function Home() {
         </div>
         <div className="son2">
           {/* Si un utilisateur est sélectionné, afficher la discussion */}
-          {selectedUser ? <Discussion selectedUser={selectedUser} /> : null}
+          {/*selectedUser ? <Discussion selectedUser={selectedUser} /> : null*/}
+          {selectedUser ? (
+            <Discussion selectedUser={selectedUser} />
+            ) : (
+            <div className="no-user-selected">
+                <img src="/drawkit.svg" alt="Veuillez sélectionner un utilisateur" style={{ width: '300px', opacity: 0.6 }} />
+                <p style={{ marginTop: '10px', color: '#555' }}>Veuillez sélectionner un utilisateur pour commencer la discussion</p>
+            </div>
+            )}
         </div>
       </div>
     </div>

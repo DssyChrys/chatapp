@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './chatsidebar.css';
-import Navbar from '../Navbar/navbar';
-import { db } from '../Discussion/firebase';
+import Navbar from '../navbar/navbar';
+import { db, auth } from '../Discussion/firebase';
 import { collection, getDocs } from 'firebase/firestore';
-import { auth } from '../Discussion/firebase';
 
 interface User {
   uid: string;
@@ -21,13 +20,15 @@ export default function Chatsidebar({ onSelectUser }: ChatsidebarProps) {
 
   useEffect(() => {
     const fetchUsers = async () => {
+      const currentUserUid = auth.currentUser?.uid;
+      if (!currentUserUid) return; // Empêche de continuer si l'utilisateur n'est pas encore chargé
+
       const userCol = collection(db, "users");
       const userSnapshot = await getDocs(userCol);
 
-      const currentUserUid = auth.currentUser?.uid;
       const userList = userSnapshot.docs
         .map((doc) => doc.data() as User)
-        .filter((user) => user.uid !== currentUserUid);
+        .filter((user) => user.uid !== currentUserUid); // Exclut l'utilisateur connecté
 
       setUsers(userList);
     };
@@ -36,7 +37,7 @@ export default function Chatsidebar({ onSelectUser }: ChatsidebarProps) {
   }, []);
 
   const handleUserSelect = (user: User) => {
-    onSelectUser(user); // Met à jour l'état de l'utilisateur sélectionné dans Home
+    onSelectUser(user); // Met à jour l'utilisateur sélectionné dans Home
   };
 
   return (
@@ -50,7 +51,7 @@ export default function Chatsidebar({ onSelectUser }: ChatsidebarProps) {
             <img src={user.photoURL || "/user.png"} alt={user.displayName} />
             <div className='userchatinfo'>
               <span>{user.displayName}</span>
-              <p></p> {/* Pour afficher le dernier message */}
+              <p></p> {/* Tu peux ajouter ici un aperçu du dernier message si tu veux */}
             </div>
           </div>
         ))}
